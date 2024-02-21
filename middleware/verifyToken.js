@@ -3,7 +3,7 @@ import User from "../models/User.js";
 
 export const verifyToken = async (req, res, next) => {
   try {
-    let token = req.cookies.jwt;
+    let token = req.headers.authorization;
 
     /* Nếu ko có token trả về Access denied */
     if (!token) {
