@@ -71,7 +71,7 @@ const updatePhoneNumber = async (req, res) => {
 /* ---------- UPDATE PASSWORD ---------- */
 const updatePassword = async (req, res) => {
   try {
-    const { password } = req.body;
+    const { newPassword, oldPassword } = req.body;
 
     /* Tìm user tồn tại trong DB */
     const user = await User.findById({ _id: req.user._id });
@@ -79,9 +79,15 @@ const updatePassword = async (req, res) => {
       return res.status(404).json({ Error: "User not found" });
     }
 
+    const checkPassword = bcryptjs.compareSync(oldPassword, user.password);
+
+    if (!checkPassword) {
+      return res.status(403).json({ Error: "Old password does not match" });
+    }
+
     /* Hash password mới */
     const salt = bcryptjs.genSaltSync(10);
-    const newHashPassword = bcryptjs.hashSync(password, salt);
+    const newHashPassword = bcryptjs.hashSync(newPassword, salt);
 
     /* Đổi Password và lưu vào DB */
     user.password = newHashPassword;

@@ -38,7 +38,7 @@ const register = async (req, res) => {
 /* ---------- VERIFY REGISTER ---------- */
 const verifyRegister = async (req, res) => {
   try {
-    const { username, email, password, phone, otp } = req.body;
+    const { username, password, phone, otp } = req.body;
 
     /* Tìm OTP đã được tạo với SĐT trong DB */
     const OtpHolder = await Otp.find({ phone: phone });
@@ -65,7 +65,6 @@ const verifyRegister = async (req, res) => {
       /* Tạo user và lưu vào DB */
       const user = await User.create({
         username: username,
-        email: email,
         password: hashPassword,
         phone: phone,
       });
@@ -113,6 +112,7 @@ const login = async (req, res) => {
 
     const token = generateToken(user._id);
     // res.cookie("jwt", token, { httpOnly: true });
+    user.token = token;
     res.setHeader("authorization", `Bearer ${token}`);
     res.status(200).json(user);
   } catch (error) {
