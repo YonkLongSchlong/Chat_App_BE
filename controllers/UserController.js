@@ -1,22 +1,19 @@
-import bcryptjs from "bcryptjs";
-import User from "../models/User.js";
+import {
+  updateBioService,
+  updatePhoneService,
+  updateUsernameService,
+  updatePasswordService,
+} from "../services/UserService.js";
 
-/* ---------- UPDATE UERNAME ---------- */
+/* ---------- UPDATE USERNAME ---------- */
 const updateUsername = async (req, res) => {
   try {
     const { username } = req.body;
+    const { id } = req.params;
+    const user = req.user;
 
-    /* Tìm user tồn tại trong DB */
-    const user = await User.findById({ _id: req.user._id });
-    if (!user) {
-      return res.status(404).json({ Error: "User not found" });
-    }
-
-    /* Đổi username và lưu vào DB */
-    user.username = username;
-    await user.save();
-
-    res.status(200).json(user);
+    const response = await updateUsernameService(user, id, username);
+    return res.status(response.status).json(response.msg);
   } catch (error) {
     res
       .status(500)
@@ -28,18 +25,11 @@ const updateUsername = async (req, res) => {
 const updateBio = async (req, res) => {
   try {
     const { bio } = req.body;
+    const { id } = req.params;
+    const user = req.user;
 
-    /* Tìm user tồn tại trong DB */
-    const user = await User.findById({ _id: req.user._id });
-    if (!user) {
-      return res.status(404).json({ Error: "User not found" });
-    }
-
-    /* Đổi Bio và lưu vào DB */
-    user.bio = bio;
-    await user.save();
-
-    res.status(200).json(user);
+    const response = await updateBioService(user, id, bio);
+    return res.status(response.status).json(response.msg);
   } catch (error) {
     res.status(500).json({ Error: "Update bio failed", msg: error.message });
   }
@@ -49,18 +39,11 @@ const updateBio = async (req, res) => {
 const updatePhoneNumber = async (req, res) => {
   try {
     const { phone } = req.body;
+    const { id } = req.params;
+    const user = req.user;
 
-    /* Tìm user tồn tại trong DB */
-    const user = await User.findById({ _id: req.user._id });
-    if (!user) {
-      return res.status(404).json({ Error: "User not found" });
-    }
-
-    /* Đổi SĐT và lưu vào DB */
-    user.phone = phone;
-    await user.save();
-
-    res.status(200).json(user);
+    const response = await updatePhoneService(user, id, phone);
+    return res.status(response.status).json(response.msg);
   } catch (error) {
     res
       .status(500)
@@ -72,28 +55,16 @@ const updatePhoneNumber = async (req, res) => {
 const updatePassword = async (req, res) => {
   try {
     const { newPassword, oldPassword } = req.body;
+    const { id } = req.params;
+    const user = req.user;
 
-    /* Tìm user tồn tại trong DB */
-    const user = await User.findById({ _id: req.user._id });
-    if (!user) {
-      return res.status(404).json({ Error: "User not found" });
-    }
-
-    const checkPassword = bcryptjs.compareSync(oldPassword, user.password);
-
-    if (!checkPassword) {
-      return res.status(403).json({ Error: "Old password does not match" });
-    }
-
-    /* Hash password mới */
-    const salt = bcryptjs.genSaltSync(10);
-    const newHashPassword = bcryptjs.hashSync(newPassword, salt);
-
-    /* Đổi Password và lưu vào DB */
-    user.password = newHashPassword;
-    await user.save();
-
-    res.status(200).json(user);
+    const response = await updatePasswordService(
+      user,
+      id,
+      oldPassword,
+      newPassword
+    );
+    return res.status(response.status).json(response.msg);
   } catch (error) {
     res
       .status(500)
@@ -101,31 +72,10 @@ const updatePassword = async (req, res) => {
   }
 };
 
-/* ---------- UPDATE EMAIL ---------- */
-const updateEmail = async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    /* Tìm user tồn tại trong DB */
-    const user = await User.findById({ _id: req.user._id });
-    if (!user) {
-      return res.status(404).json({ Error: "User not found" });
-    }
-
-    /* Đổi Email và lưu vào DB */
-    user.email = email;
-    await user.save();
-
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ Error: "Update email failed", msg: error.message });
-  }
+/* ---------- FRIEND REQUEST ---------- */
+const friendRequest = async (req, res) => {
+  const { id, recipentId } = req.params;
+  const user = req.user;
 };
 
-export {
-  updateUsername,
-  updateBio,
-  updatePhoneNumber,
-  updatePassword,
-  updateEmail,
-};
+export { updateUsername, updateBio, updatePhoneNumber, updatePassword };

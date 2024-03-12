@@ -30,10 +30,6 @@ const userSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    friendRequests: {
-      type: [String],
-      default: [],
-    },
   },
   {
     timestamps: true,
