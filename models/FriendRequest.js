@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const FriendRequestSchema = mongoose.Schema(
+const friendRequestSchema = new mongoose.Schema(
   {
     id: mongoose.Schema.ObjectId,
     requester: {
@@ -12,7 +12,7 @@ const FriendRequestSchema = mongoose.Schema(
       require: true,
     },
     status: {
-      type: int,
+      type: Number,
       require: true,
     },
   },
@@ -21,5 +21,5 @@ const FriendRequestSchema = mongoose.Schema(
   }
 );
 
-const FriendRequest = mongoose.model("FriendRequest", FriendRequestSchema);
+const FriendRequest = mongoose.model("FriendRequest", friendRequestSchema);
 export default FriendRequest;

@@ -3,6 +3,9 @@ import {
   updatePhoneService,
   updateUsernameService,
   updatePasswordService,
+  friendRequestService,
+  friendAcceptService,
+  getAllFriendsRequestService,
 } from "../services/UserService.js";
 
 /* ---------- UPDATE USERNAME ---------- */
@@ -74,8 +77,57 @@ const updatePassword = async (req, res) => {
 
 /* ---------- FRIEND REQUEST ---------- */
 const friendRequest = async (req, res) => {
-  const { id, recipentId } = req.params;
-  const user = req.user;
+  try {
+    const { id, recipentId } = req.params;
+    const user = req.user;
+
+    const response = await friendRequestService(user, id, recipentId);
+    return res.status(response.status).json(response.msg);
+  } catch (error) {
+    return res.status(500).json({
+      Error: "Something went wrong in friend request feature",
+      msg: error,
+    });
+  }
 };
 
-export { updateUsername, updateBio, updatePhoneNumber, updatePassword };
+/* ---------- FRIEND ACCEPT ---------- */
+const friendAccept = async (req, res) => {
+  try {
+    const { id, requesterId } = req.params;
+    const user = req.user;
+
+    const response = await friendAcceptService(user, id, requesterId);
+    return res.status(response.status).json(response.msg);
+  } catch (error) {
+    return res.status(500).json({
+      Error: "Something went wrong in friend accept feature",
+      msg: error,
+    });
+  }
+};
+
+/* ---------- GET ALL FRIENDS REQUEST ---------- */
+const getAllFriendsRequest = async (req, res) => {
+  try {
+    const user = req.user;
+    const { id } = req.params;
+    const response = await getAllFriendsRequestService(user, id);
+    return res.status(response.status).json(response.msg);
+  } catch (error) {
+    return res.status(500).json({
+      Error: "Something went wrong in get friend requests",
+      msg: error.message,
+    });
+  }
+};
+
+export {
+  updateUsername,
+  updateBio,
+  updatePhoneNumber,
+  updatePassword,
+  friendRequest,
+  friendAccept,
+  getAllFriendsRequest,
+};
